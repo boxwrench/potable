@@ -9,10 +9,11 @@ Established the initial public project scaffold for Potable.
 - Drafted a Hugging Face dataset card for Potable Dataset.
 - Drafted a Hugging Face model card for PotableLM.
 - Added overview and roadmap documents.
+- Added dataset reference docs: schema, taxonomy, style guide, annotation guide, and changelog.
 - Standardized naming around:
-  - Project: Potable
-  - Dataset: Potable Dataset
-  - Models: PotableLM
+  Project: Potable
+  Dataset: Potable Dataset
+  Models: PotableLM
 
 ## Log Format
 

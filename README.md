@@ -66,6 +66,11 @@ Near-term goals:
 potable/
   README.md
   DEVLOG.md
+  CHANGELOG.md
+  SCHEMA.md
+  TAXONOMY.md
+  STYLE_GUIDE.md
+  ANNOTATION_GUIDE.md
   .gitignore
   docs/
     PROJECT_OVERVIEW.md
@@ -101,6 +106,14 @@ Initial municipal categories:
 - distribution
 - troubleshooting
 - emergency_response
+
+Core reference documents:
+
+- [SCHEMA.md](C:\Github\potable\SCHEMA.md)
+- [TAXONOMY.md](C:\Github\potable\TAXONOMY.md)
+- [STYLE_GUIDE.md](C:\Github\potable\STYLE_GUIDE.md)
+- [ANNOTATION_GUIDE.md](C:\Github\potable\ANNOTATION_GUIDE.md)
+- [CHANGELOG.md](C:\Github\potable\CHANGELOG.md)
 
 ## Release strategy
 
