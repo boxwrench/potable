@@ -1,0 +1,11 @@
+{
+  "id": "eval-0001",
+  "category": "filtration",
+  "question": "My filter effluent turbidity spiked from 0.04 to 0.20 NTU in the last 30 minutes. What should I do first?",
+  "reference_answer": "Confirm the reading with a bench grab sample. If it holds, check filter run time and headloss. A long run with high headloss points to breakthrough — backwash the filter. If headloss is normal, look upstream at settled water quality and check whether loading changed. Pull the filter offline if turbidity keeps climbing toward your action level.",
+  "must_contain": ["bench", "headloss", "backwash"],
+  "must_not_contain": ["as an ai", "it is important to note"],
+  "difficulty": "intermediate",
+  "notes": "Tests basic turbidity response reasoning and operator voice.",
+  "model_output": ""
+}

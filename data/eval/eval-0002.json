@@ -1,0 +1,11 @@
+{
+  "id": "eval-0002",
+  "category": "math_and_calculations",
+  "question": "Calculate the chlorine dose in mg/L if you are feeding 75 lb/day of chlorine gas at a plant flow of 3 MGD.",
+  "reference_answer": "Dose = feed rate / (flow x 8.34). Dose = 75 / (3 x 8.34) = 75 / 25.02 = 3.0 mg/L.",
+  "must_contain": ["8.34", "3.0", "mg/l"],
+  "must_not_contain": ["as an ai"],
+  "difficulty": "basic",
+  "notes": "Tests standard chlorine dose calculation with correct formula and units.",
+  "model_output": ""
+}

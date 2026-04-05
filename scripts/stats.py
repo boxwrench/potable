@@ -12,6 +12,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 DEFAULT_DATA_DIR = Path("data/raw")
+TOKEN_DIVISOR = 4             # same heuristic as validate.py
 
 # Full taxonomy for gap detection (from TAXONOMY.md)
 ALL_CATEGORIES = [
@@ -103,6 +104,7 @@ def main() -> int:
     status_counts: Counter[str] = Counter()
     source_counts: Counter[str] = Counter()
     cat_sub_map: dict[str, Counter[str]] = {}
+    token_counts: list[tuple[str, int]] = []  # (filename, estimated tokens)
     total = 0
     load_errors = 0
 
@@ -128,6 +130,15 @@ def main() -> int:
         if cat not in cat_sub_map:
             cat_sub_map[cat] = Counter()
         cat_sub_map[cat][sub] += 1
+
+        # Token estimation
+        messages = data.get("messages", [])
+        total_chars = sum(
+            len(m.get("content", ""))
+            for m in messages
+            if isinstance(m, dict)
+        )
+        token_counts.append((filepath.name, total_chars // TOKEN_DIVISOR))
 
     # --- Summary ---
     print("=" * 50)
@@ -157,6 +168,27 @@ def main() -> int:
 
     # --- By source type ---
     print_table("By Source Type", source_counts)
+
+    # --- Token stats ---
+    if token_counts:
+        tokens_only = sorted(t for _, t in token_counts)
+        n = len(tokens_only)
+        median = tokens_only[n // 2] if n % 2 == 1 else (tokens_only[n // 2 - 1] + tokens_only[n // 2]) // 2
+        print(f"\nToken Estimates (chars/{TOKEN_DIVISOR} heuristic)")
+        print("-" * 42)
+        print(f"  Min:    {tokens_only[0]:>6}")
+        print(f"  Max:    {tokens_only[-1]:>6}")
+        print(f"  Mean:   {sum(tokens_only) // n:>6}")
+        print(f"  Median: {median:>6}")
+
+        # Show outliers (top/bottom by token count)
+        if n >= 5:
+            print(f"\n  Shortest records:")
+            for name, tokens in sorted(token_counts, key=lambda x: x[1])[:3]:
+                print(f"    {name:<30}  {tokens:>5} tokens")
+            print(f"  Longest records:")
+            for name, tokens in sorted(token_counts, key=lambda x: x[1], reverse=True)[:3]:
+                print(f"    {name:<30}  {tokens:>5} tokens")
 
     # --- Coverage gaps ---
     gaps = [c for c in ALL_CATEGORIES if category_counts.get(c, 0) == 0]

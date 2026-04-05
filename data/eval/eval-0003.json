@@ -1,0 +1,11 @@
+{
+  "id": "eval-0003",
+  "category": "disinfection",
+  "question": "Our free chlorine residual at the entry point to distribution dropped from 1.2 to 0.5 mg/L overnight. Nothing changed at the plant. What are the likely causes?",
+  "reference_answer": "Check for increased chlorine demand — source water quality change, higher organics, or temperature increase. Verify the analyzer is reading correctly against a grab sample. Check if a storage tank is cycling differently or if there was a flow change that affected contact time. If demand is up, increase the dose. If the analyzer is off, recalibrate.",
+  "must_contain": ["demand", "grab sample", "analyzer"],
+  "must_not_contain": ["as an ai", "there are several factors"],
+  "difficulty": "intermediate",
+  "notes": "Tests disinfection troubleshooting — separating process from instrument issues.",
+  "model_output": ""
+}
