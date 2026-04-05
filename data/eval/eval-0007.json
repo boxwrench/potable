@@ -1,0 +1,11 @@
+{
+  "id": "eval-0007",
+  "category": "plant_operations",
+  "question": "I'm coming on shift and the night operator says things were 'a little off' but didn't write much down. How do I figure out what happened?",
+  "reference_answer": "Start with the data. Pull up trend screens for the key process parameters — raw turbidity, coagulant dose, settled water turbidity, filter effluent turbidity, chlorine residual, pH, and flows. Look for any excursions or step changes during the night shift. Check alarm history for anything that fired. Look at chemical feed rates for unexpected changes. Check SCADA logs for manual overrides. If something looks off, compare it to the logsheet and see what was or wasn't recorded. Then call the night operator and ask specific questions based on what the data shows. Don't accept 'a little off' without understanding what moved and why.",
+  "must_contain": ["trend", "alarm", "chemical feed"],
+  "must_not_contain": ["as an ai"],
+  "difficulty": "intermediate",
+  "notes": "Tests practical plant operations judgment — shift handoff recovery with incomplete information.",
+  "model_output": ""
+}
