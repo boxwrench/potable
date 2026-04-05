@@ -71,19 +71,43 @@ potable/
   TAXONOMY.md
   STYLE_GUIDE.md
   ANNOTATION_GUIDE.md
+  Makefile
   .gitignore
   docs/
     PROJECT_OVERVIEW.md
     ROADMAP.md
+    IDEAS.md
   hf-dataset-card/
     README.md
   hf-model-card/
     README.md
   data/
-    raw/
+    raw/                     ← one .json record per file
+    eval/                    ← golden evaluation cases
+    seeds/                   ← batch scaffolding seed files
+    exports/                 ← (gitignored) training JSONL output
+    system_prompt.txt        ← canonical system prompt
   scripts/
+    validate.py              ← schema validation + duplicate detection
+    export.py                ← export clean training JSONL
+    stats.py                 ← coverage and token stats
+    eval.py                  ← golden eval scoring
+    new_record.py            ← scaffold a single new record
+    batch_scaffold.py        ← scaffold records from a seeds file
   .github/
     workflows/
+      validate.yml           ← CI validation on push/PR
+```
+
+## Toolchain quickstart
+
+```bash
+make validate       # check all records against schema
+make stats          # coverage report with gap detection
+make export         # export approved records to JSONL
+make eval           # run golden eval set
+make new-record     # scaffold a blank record (interactive)
+make scaffold S=data/seeds/municipal_starter.txt  # batch scaffold
 ```
 
 ## Planned taxonomy

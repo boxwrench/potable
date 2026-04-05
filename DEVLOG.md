@@ -1,5 +1,27 @@
 # Dev Log
 
+## 2026-04-05
+
+Built the complete dataset toolchain. The project now has working infrastructure for authoring, validating, exporting, and evaluating training data.
+
+- Added `validate.py`: schema validation against all SCHEMA.md rules, token-length heuristic, unique ID checks, Jaccard similarity duplicate detection on user prompts.
+- Added `export.py`: strips metadata to produce clean training JSONL. Filters by status, category, difficulty, version. Optional system prompt injection.
+- Added `stats.py`: coverage report by category, subcategory, difficulty, source type, review status. Token estimate stats (min/max/mean/median). Gap detection against full taxonomy.
+- Added `eval.py`: golden evaluation framework with must_contain/must_not_contain checks. Three starter eval cases (filtration, calculations, disinfection).
+- Added `new_record.py`: interactive CLI scaffolder with auto-incrementing IDs and canonical system prompt injection.
+- Added `batch_scaffold.py`: batch record creation from a seeds file. Dry-run mode for planning.
+- Created `data/system_prompt.txt`: minimal canonical system prompt (two sentences).
+- Created `data/seeds/municipal_starter.txt`: 26 planned records across all 16 municipal categories.
+- Added GitHub Actions CI workflow (`validate.yml`) to run validation on push/PR.
+- Added Makefile with targets for all common operations.
+- Added `docs/IDEAS.md` for future exploration directions (facility dataset creation, gamified capture, AutoAgent/Meta-Harness agent frameworks).
+- Three test fixture records in `data/raw/` (draft, ai_generated) to prove the toolchain.
+- Updated README with current repo layout and toolchain quickstart.
+- Decision: one record per `.json` file (better for git diffs and review).
+- Decision: pure stdlib Python 3.10+, no external dependencies.
+- Decision: minimal system prompt, let fine-tuning internalize voice.
+- Next: author real operator content using the seeds file as a guide.
+
 ## 2026-04-04
 
 Established the initial public project scaffold for Potable.
