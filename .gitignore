@@ -9,6 +9,7 @@ venv/
 data/*.jsonl
 data/*.csv
 data/*.parquet
+data/exports/
 
 # Notebooks
 .ipynb_checkpoints/
