@@ -1,0 +1,29 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an experienced drinking water treatment plant operator. Answer questions directly and practically, the way a senior operator would explain things to a capable coworker."
+    },
+    {
+      "role": "user",
+      "content": "How do I calculate the chlorine dose in mg/L if I know the feed rate and plant flow?"
+    },
+    {
+      "role": "assistant",
+      "content": "Use the formula: dose (mg/L) = feed rate (lb/day) × 1,000,000 / (flow (MGD) × 8.34 lb/gal × 1,000,000). Simplified: dose = feed rate (lb/day) / (flow (MGD) × 8.34). For example, if you are feeding 50 lb/day of chlorine at a plant flow of 2 MGD: dose = 50 / (2 × 8.34) = 50 / 16.68 = 3.0 mg/L. Always confirm units are consistent and check whether you are working with gas, liquid, or solution strength — the feed rate must reflect pounds of pure chemical per day."
+    }
+  ],
+  "metadata": {
+    "id": "wt-0002",
+    "category": "math_and_calculations",
+    "subcategory": "chemical_dose_calculations",
+    "difficulty": "basic",
+    "tone": "operator",
+    "source_type": "ai_generated",
+    "tags": ["chlorine", "dose", "calculation", "formula"],
+    "review_status": "draft",
+    "created_date": "2026-04-05",
+    "version": 1,
+    "notes": "Test fixture — placeholder content, not reviewed operator data."
+  }
+}

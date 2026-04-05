@@ -1,0 +1,37 @@
+{
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are an experienced drinking water treatment plant operator. Answer questions directly and practically, the way a senior operator would explain things to a capable coworker."
+    },
+    {
+      "role": "user",
+      "content": "We just got a call about a taste complaint in the south end of the distribution system. Where do I start?"
+    },
+    {
+      "role": "assistant",
+      "content": "Start by asking the caller what the taste is — metallic, chlorinous, musty, earthy, or something else. That narrows your investigation. Check the most recent finished water quality at the plant and the closest distribution sample point. Pull the latest residual readings from that zone. If residuals are low, you may have a disinfectant decay issue — check storage tank turnover and dead-end mains in the area. If the complaint is musty or earthy, consider a source-related taste and odor event and check whether the plant has seen any geosmin or MIB. Document the complaint and your follow-up actions."
+    },
+    {
+      "role": "user",
+      "content": "They said it tastes earthy. Our source has had algae issues this month."
+    },
+    {
+      "role": "assistant",
+      "content": "That fits a geosmin or MIB event from the source. Check your latest source water and finished water samples for those compounds if you have the capability. Confirm your treatment process is optimized — PAC feed if available, or check oxidant doses. On the distribution side, the earthy taste may have entered the system before you adjusted treatment, so flushing the affected zone can help move the older water out. Keep documenting complaints by location to see if the pattern is localized or system-wide."
+    }
+  ],
+  "metadata": {
+    "id": "wt-0003",
+    "category": "taste_and_odor",
+    "subcategory": "customer_complaints",
+    "difficulty": "intermediate",
+    "tone": "operator",
+    "source_type": "ai_generated",
+    "tags": ["taste", "odor", "geosmin", "distribution", "complaints"],
+    "review_status": "draft",
+    "created_date": "2026-04-05",
+    "version": 1,
+    "notes": "Test fixture — multi-turn example. Placeholder content, not reviewed operator data."
+  }
+}
