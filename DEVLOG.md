@@ -17,10 +17,15 @@ Built the complete dataset toolchain. The project now has working infrastructure
 - Added `docs/IDEAS.md` for future exploration directions (facility dataset creation, gamified capture, AutoAgent/Meta-Harness agent frameworks).
 - Three test fixture records in `data/raw/` (draft, ai_generated) to prove the toolchain.
 - Updated README with current repo layout and toolchain quickstart.
+- Added CLAUDE.md with full project instructions for Claude Code sessions.
+- Added `.editorconfig` for consistent line endings and indentation.
+- Expanded golden eval set to 8 cases covering: filtration, math/calculations, disinfection, safety (confined space entry), regulations (IESWTR turbidity), troubleshooting (multi-filter pattern), plant operations (shift recovery), emergency response (contamination suspicion).
 - Decision: one record per `.json` file (better for git diffs and review).
 - Decision: pure stdlib Python 3.10+, no external dependencies.
-- Decision: minimal system prompt, let fine-tuning internalize voice.
-- Next: author real operator content using the seeds file as a guide.
+- Decision: minimal system prompt — let fine-tuning internalize voice rather than overloading the system message.
+- Decision: eval cases use keyword checks (must_contain/must_not_contain) as the initial scoring method. Semantic scoring deferred until inference pipeline exists.
+- Pushed all work to GitHub.
+- Next: author real operator content using the seeds file as a guide. Run `python scripts/batch_scaffold.py data/seeds/municipal_starter.txt` to create blank records.
 
 ## 2026-04-04
 

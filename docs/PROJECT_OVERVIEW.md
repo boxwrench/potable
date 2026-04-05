@@ -38,12 +38,23 @@ Two planned tracks:
 - scripted export to JSONL
 - validation, deduplication, and benchmark-driven iteration
 
+### Toolchain layer
+
+A pure stdlib Python toolchain supporting the full data lifecycle:
+
+- schema validation with duplicate detection and token-length bounds
+- clean JSONL export with filtering and system prompt injection
+- coverage reporting with taxonomy gap detection
+- golden evaluation framework with keyword-based scoring
+- record scaffolding tools (interactive and batch) for efficient authoring
+- GitHub Actions CI for automated validation on every push
+
 ## Intended public artifacts
 
 - GitHub repository for methods, documentation, and scripts
 - Hugging Face dataset page
 - Hugging Face model page
-- eventually: sample records, taxonomy docs, style guide, and benchmark notes
+- Sample records, taxonomy docs, style guide, annotation guide, and benchmark notes
 
 Public naming is expected to follow this pattern:
 
