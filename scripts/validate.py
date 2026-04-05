@@ -15,6 +15,7 @@ MIN_TOKEN_ESTIMATE = 50       # warn below this (chars / 4 heuristic)
 MAX_TOKEN_ESTIMATE = 4096     # error above this
 TOKEN_DIVISOR = 4             # rough chars-to-tokens approximation
 DEFAULT_DATA_DIR = Path("data/raw")
+SIMILARITY_THRESHOLD = 0.85   # warn when two user prompts are this similar (0-1)
 
 # ---------------------------------------------------------------------------
 # Allowed enum values (from SCHEMA.md and TAXONOMY.md)
@@ -76,6 +77,30 @@ ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 def estimate_tokens(char_count: int) -> int:
     return char_count // TOKEN_DIVISOR
+
+
+def tokenize(text: str) -> set[str]:
+    """Split text into lowercased word tokens for similarity comparison."""
+    return set(re.findall(r"[a-z0-9]+", text.lower()))
+
+
+def jaccard_similarity(a: set[str], b: set[str]) -> float:
+    """Jaccard similarity between two token sets."""
+    if not a and not b:
+        return 1.0
+    if not a or not b:
+        return 0.0
+    return len(a & b) / len(a | b)
+
+
+def extract_user_prompts(data: dict) -> list[str]:
+    """Extract all user message content strings from a record."""
+    messages = data.get("messages", [])
+    return [
+        m["content"]
+        for m in messages
+        if isinstance(m, dict) and m.get("role") == "user" and isinstance(m.get("content"), str)
+    ]
 
 
 def validate_record(filepath: Path, data: dict, seen_ids: set[str]) -> tuple[list[str], list[str]]:
@@ -241,13 +266,15 @@ def main() -> int:
     seen_ids: set[str] = set()
     total_errors = 0
     total_warnings = 0
+    # Collect user prompts for duplicate detection: [(filename, prompt_text, token_set)]
+    prompt_index: list[tuple[str, str, set[str]]] = []
 
     for filepath in files:
         try:
             with open(filepath, encoding="utf-8") as f:
                 data = json.load(f)
         except json.JSONDecodeError as e:
-            print(f"ERROR {filepath.name}: invalid JSON — {e}")
+            print(f"ERROR {filepath.name}: invalid JSON -- {e}")
             total_errors += 1
             continue
 
@@ -260,6 +287,29 @@ def main() -> int:
 
         total_errors += len(errors)
         total_warnings += len(warnings)
+
+        # Index user prompts for similarity check
+        for prompt_text in extract_user_prompts(data):
+            tokens = tokenize(prompt_text)
+            if tokens:
+                prompt_index.append((filepath.name, prompt_text, tokens))
+
+    # --- Duplicate detection pass ---
+    seen_pairs: set[tuple[str, str]] = set()
+    for i, (name_a, text_a, tokens_a) in enumerate(prompt_index):
+        for j, (name_b, text_b, tokens_b) in enumerate(prompt_index):
+            if j <= i:
+                continue
+            if name_a == name_b:
+                continue
+            pair = (name_a, name_b)
+            if pair in seen_pairs:
+                continue
+            sim = jaccard_similarity(tokens_a, tokens_b)
+            if sim >= SIMILARITY_THRESHOLD:
+                seen_pairs.add(pair)
+                print(f"WARN  similar prompts ({sim:.0%}): {name_a} <-> {name_b}")
+                total_warnings += 1
 
     print(f"\n--- Validation summary ---")
     print(f"Files checked: {len(files)}")
