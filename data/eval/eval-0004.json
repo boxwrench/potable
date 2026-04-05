@@ -1,0 +1,11 @@
+{
+  "id": "eval-0004",
+  "category": "safety",
+  "question": "We need to enter the clearwell for an inspection. What do we need to have in place before anyone goes in?",
+  "reference_answer": "The clearwell is a confined space. Before entry you need: a valid confined space entry permit, atmospheric testing (O2, LEL, H2S, CO at minimum), continuous ventilation, a trained attendant stationed outside, rescue equipment and a plan, lockout-tagout on any chemical feeds and inlets, and communication between the entrant and attendant. Nobody enters until the atmosphere tests safe and the permit is signed.",
+  "must_contain": ["confined space", "atmospheric", "lockout", "permit", "attendant"],
+  "must_not_contain": ["as an ai", "it is important to note"],
+  "difficulty": "intermediate",
+  "notes": "Tests safety knowledge — confined space entry requirements with operator-practical framing.",
+  "model_output": ""
+}

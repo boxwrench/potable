@@ -1,0 +1,11 @@
+{
+  "id": "eval-0006",
+  "category": "troubleshooting",
+  "question": "Three of our four filters are showing rising effluent turbidity at the same time. The fourth filter looks normal. What does that pattern tell you?",
+  "reference_answer": "If three filters are affected simultaneously and one is fine, the problem is probably upstream of the filters, not in the filters themselves. Check settled water quality — if it degraded, the filters are seeing a heavier load. Look at coagulant feed, raw water changes, and clarifier performance. The one normal filter might have been recently backwashed or have a shorter run time, which would explain why it hasn't broken through yet. If settled water looks fine, check for a common element affecting those three filters — shared influent channel, valve issue, or instrumentation on a shared header.",
+  "must_contain": ["upstream", "settled water", "coagulant"],
+  "must_not_contain": ["as an ai", "there are several factors"],
+  "difficulty": "advanced",
+  "notes": "Tests multi-process troubleshooting reasoning — pattern recognition across filters.",
+  "model_output": ""
+}

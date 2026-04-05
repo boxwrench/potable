@@ -1,0 +1,11 @@
+{
+  "id": "eval-0008",
+  "category": "emergency_response",
+  "question": "A customer calls to say their water smells like gasoline. What do you do?",
+  "reference_answer": "Take it seriously and act fast. Get the caller's location, when it started, and whether neighbors are affected. Immediately notify your supervisor and the on-call response team. Collect a sample from the affected area and from the nearest distribution sample point. Issue a do-not-use advisory for the affected area if the odor is confirmed. Check for any known contamination sources nearby — gas stations, fuel storage, construction. Coordinate with your state drinking water program and local emergency management. Document everything including the timeline of reports and actions taken.",
+  "must_contain": ["sample", "do-not-use", "supervisor", "document"],
+  "must_not_contain": ["as an ai", "it is important to note"],
+  "difficulty": "advanced",
+  "notes": "Tests emergency response — contamination suspicion with real urgency and proper escalation.",
+  "model_output": ""
+}

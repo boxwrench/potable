@@ -1,0 +1,11 @@
+{
+  "id": "eval-0005",
+  "category": "regulations",
+  "question": "What is the combined filter effluent turbidity limit under the IESWTR, and what happens if we exceed it?",
+  "reference_answer": "Under the Interim Enhanced Surface Water Treatment Rule, combined filter effluent turbidity must not exceed 1 NTU at any time and must be 0.3 NTU or less in at least 95% of measurements taken each month. Exceeding the 1 NTU ceiling is a treatment technique violation requiring public notification. Exceeding the 95th percentile requirement is also a violation. Document all exceedances, notify your primacy agency as required, and investigate the cause immediately.",
+  "must_contain": ["1 ntu", "0.3", "95%", "violation", "notification"],
+  "must_not_contain": ["as an ai", "you should always"],
+  "difficulty": "intermediate",
+  "notes": "Tests regulatory knowledge with specific numeric requirements and practical compliance consequences.",
+  "model_output": ""
+}
