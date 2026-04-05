@@ -13,10 +13,25 @@ from pathlib import Path
 DEFAULT_DATA_DIR = Path("data/raw")
 DEFAULT_OUTPUT = Path("data/exports/potable_train.jsonl")
 DEFAULT_STATUS = "approved"  # only export approved records by default
+SYSTEM_PROMPT_FILE = Path("data/system_prompt.txt")
 
 # ---------------------------------------------------------------------------
 # Export logic
 # ---------------------------------------------------------------------------
+
+
+def load_system_prompt(path: Path) -> str | None:
+    """Load the canonical system prompt if the file exists."""
+    if path.is_file():
+        return path.read_text(encoding="utf-8").strip()
+    return None
+
+
+def ensure_system_message(messages: list[dict], system_prompt: str) -> list[dict]:
+    """Prepend system message if the record doesn't already have one."""
+    if messages and messages[0].get("role") == "system":
+        return messages
+    return [{"role": "system", "content": system_prompt}] + messages
 
 
 def load_record(filepath: Path) -> dict | None:
@@ -79,6 +94,10 @@ def main() -> int:
     parser.add_argument(
         "--min-version", type=int, default=None, help="Minimum version number"
     )
+    parser.add_argument(
+        "--inject-system-prompt", action="store_true",
+        help="Inject canonical system prompt into records missing a system message",
+    )
     args = parser.parse_args()
 
     data_dir: Path = args.path
@@ -92,6 +111,13 @@ def main() -> int:
         return 0
 
     status_filter = None if args.status == "any" else args.status
+
+    system_prompt = None
+    if args.inject_system_prompt:
+        system_prompt = load_system_prompt(SYSTEM_PROMPT_FILE)
+        if system_prompt is None:
+            print(f"Error: --inject-system-prompt requires {SYSTEM_PROMPT_FILE}")
+            return 1
 
     # Ensure output directory exists
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -117,6 +143,9 @@ def main() -> int:
             if not isinstance(messages, list):
                 skipped += 1
                 continue
+
+            if system_prompt:
+                messages = ensure_system_message(messages, system_prompt)
 
             export_obj = {"messages": messages}
             out.write(json.dumps(export_obj, ensure_ascii=False) + "\n")
