@@ -1,0 +1,66 @@
+# Municipal Starter Seeds
+# Format: category | subcategory | difficulty | topic description
+#
+# This file plans the first batch of records across categories.
+# Use with: python scripts/batch_scaffold.py data/seeds/municipal_starter.txt
+#
+# Coverage goal: at least one seed per major municipal category,
+# mix of difficulties, bias toward common operational situations.
+
+# --- Water Source ---
+water_source | source_water_changes | intermediate | Responding to rapid raw water turbidity increase after rain
+water_source | reservoir_turnover | intermediate | Recognizing and responding to fall reservoir turnover
+
+# --- Coagulation / Flocculation ---
+coagulation_flocculation | coagulant_dosing | basic | How to adjust coagulant dose when raw turbidity doubles
+coagulation_flocculation | jar_test_interpretation | intermediate | Reading jar test results and translating to plant-scale dose
+
+# --- Sedimentation ---
+sedimentation | clarifier_performance | basic | What settled water turbidity tells you about clarifier performance
+sedimentation | sludge_blanket_control | intermediate | Managing sludge blanket depth during high-flow events
+
+# --- Filtration ---
+filtration | backwash_triggers | basic | When to initiate a backwash based on headloss and run time
+filtration | ripening_and_return_to_service | intermediate | Managing filter ripening after backwash before returning to service
+
+# --- Disinfection ---
+disinfection | ct_compliance | intermediate | How to verify CT compliance at your plant
+disinfection | disinfectant_troubleshooting | advanced | Troubleshooting unexplained chlorine demand increase
+
+# --- Corrosion Control ---
+corrosion_control | ph_and_alkalinity_control | basic | Why pH and alkalinity matter for corrosion control
+corrosion_control | finished_water_stability | intermediate | Interpreting Langelier Saturation Index results
+
+# --- Taste and Odor ---
+taste_and_odor | geosmin_mib_response | intermediate | Operational response to geosmin detection in source water
+
+# --- Plant Operations ---
+plant_operations | shift_handoffs | basic | What to include in an effective shift handoff
+plant_operations | operating_priorities | advanced | Prioritizing actions during simultaneous process upsets
+
+# --- Laboratory ---
+laboratory | instrument_checks | basic | How to verify a turbidimeter is reading correctly
+laboratory | bench_testing | intermediate | Running and interpreting a jar test
+
+# --- Safety ---
+safety | chemical_handling | basic | Safe procedures for switching out a chlorine cylinder
+safety | confined_space_awareness | intermediate | What makes a space confined and what that means for entry
+
+# --- Regulations ---
+regulations | turbidity_compliance | intermediate | Understanding the turbidity requirements under the IESWTR
+
+# --- Math and Calculations ---
+math_and_calculations | flow_and_volume | basic | Calculating detention time from basin volume and flow rate
+math_and_calculations | chemical_dose_calculations | intermediate | Calculating chemical feed rate from desired dose and flow
+
+# --- Equipment and Maintenance ---
+equipment_and_maintenance | analyzer_issues | intermediate | Troubleshooting a chlorine analyzer that is reading erratically
+
+# --- Distribution ---
+distribution | residual_management | intermediate | Maintaining chlorine residual in a long dead-end main
+
+# --- Troubleshooting ---
+troubleshooting | instrument_vs_process_fault | advanced | How to tell if a turbidity spike is real or an instrument problem
+
+# --- Emergency Response ---
+emergency_response | contamination_suspicions | advanced | Initial response steps when a contamination event is suspected
