@@ -144,8 +144,13 @@ Models: License will be specified with each release
 
 ## Contact
 
-Keith Wilkinson
-Operational Inference — [operationalinference.com](https://operationalinference.com)
-GitHub: [boxwrench](https://github.com/boxwrench)
-Writing: [title22.org](https://title22.org)
-Hugging Face: [boxwrench](https://huggingface.co/boxwrench)
+- Keith Wilkinson
+- Operational Inference: [operationalinference.com](https://operationalinference.com)
+- Project umbrella: Effective Intelligence
+- GitHub: [boxwrench](https://github.com/boxwrench)
+- Writing: [title22.org](https://title22.org)
+- Hugging Face: [boxwrench](https://huggingface.co/boxwrench)
+
+## Dev Log
+
+Ongoing project notes and milestone entries live in [DEVLOG.md](DEVLOG.md).

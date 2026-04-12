@@ -56,12 +56,12 @@ One `.json` file per record in `data/raw/`. Shape:
 
 | Command | Purpose |
 |---------|---------|
-| `python scripts/validate.py` | Validate all records against schema |
-| `python scripts/export.py` | Export approved records to training JSONL |
-| `python scripts/stats.py` | Coverage report with gap detection |
-| `python scripts/eval.py -v` | Run golden eval set |
-| `python scripts/new_record.py` | Scaffold a new blank record (interactive) |
-| `python scripts/batch_scaffold.py <seeds>` | Batch scaffold from seeds file |
+| `python3 scripts/validate.py` | Validate all records against schema |
+| `python3 scripts/export.py` | Export approved records to training JSONL |
+| `python3 scripts/stats.py` | Coverage report with gap detection |
+| `python3 scripts/eval.py -v` | Run golden eval set |
+| `python3 scripts/new_record.py` | Scaffold a new blank record (interactive) |
+| `python3 scripts/batch_scaffold.py <seeds>` | Batch scaffold from seeds file |
 
 Always run `validate.py` after creating or editing records.
 

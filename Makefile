@@ -1,6 +1,6 @@
 .PHONY: help validate export stats eval new-record scaffold clean
 
-PYTHON ?= python
+PYTHON ?= python3
 DATA_DIR ?= data/raw
 EVAL_DIR ?= data/eval
 EXPORT_FILE ?= data/exports/potable_train.jsonl
