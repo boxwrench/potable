@@ -2,7 +2,7 @@
 # Format: category | subcategory | difficulty | topic description
 #
 # This file plans the first batch of records across categories.
-# Use with: python scripts/batch_scaffold.py data/seeds/municipal_starter.txt
+# Use with: python3 scripts/batch_scaffold.py data/seeds/municipal_starter.txt
 #
 # Coverage goal: at least one seed per major municipal category,
 # mix of difficulties, bias toward common operational situations.

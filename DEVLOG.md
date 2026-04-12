@@ -42,7 +42,7 @@ Built the complete dataset toolchain. The project now has working infrastructure
 - Decision: minimal system prompt — let fine-tuning internalize voice rather than overloading the system message.
 - Decision: eval cases use keyword checks (must_contain/must_not_contain) as the initial scoring method. Semantic scoring deferred until inference pipeline exists.
 - Pushed all work to GitHub.
-- Next: author real operator content using the seeds file as a guide. Run `python scripts/batch_scaffold.py data/seeds/municipal_starter.txt` to create blank records.
+- Next: author real operator content using the seeds file as a guide. Run `python3 scripts/batch_scaffold.py data/seeds/municipal_starter.txt` to create blank records.
 
 ## 2026-04-04
 
