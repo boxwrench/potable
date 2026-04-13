@@ -2,21 +2,13 @@
 
 ## Summary
 
-Potable is a dataset-and-model project for drinking water treatment operations. It is being developed under Effective Intelligence, an umbrella identity for applied AI work that makes expert technical knowledge practically accessible in real-world domains.
+Potable is a dataset-and-model project for drinking water treatment operations, developed under [Operational Inference](https://operationalinference.com).
 
-The project begins with drinking water treatment because that is where the founder has direct operational expertise. It is structured around one core conviction: the durable asset is not a single model checkpoint, but a high-quality dataset that captures real operator judgment in a reusable format.
-
-## Strategic framing
-
-- Open by default
-- Commercial only if needed for cost recovery
-- Technical rigor over hype
-- Operator voice as the differentiator
-- Developing regions track as the highest-impact long-term application
+The project begins with drinking water treatment because that is where the founder has direct operational expertise. The focus is on building a high-quality dataset that captures real operator judgment in a reusable, framework-agnostic format.
 
 ## What is being built
 
-### Dataset layer
+### Dataset
 
 A fine-tuning dataset with:
 
@@ -24,40 +16,28 @@ A fine-tuning dataset with:
 - metadata for filtering, review status, versioning, and auditability
 - examples grounded in real plant-floor reasoning rather than textbook abstraction
 
-### Model layer
+### Models
 
 Two planned tracks:
 
-- Municipal track for developed-world treatment plants
+- Municipal track for licensed operators at treatment plants
 - Developing regions track for offline use by community water workers
 
-### Workflow layer
+### Toolchain
 
-- fast field capture
-- lightweight desk structuring
-- scripted export to JSONL
-- validation, deduplication, and benchmark-driven iteration
+A pure stdlib Python toolchain supporting the data lifecycle:
 
-### Toolchain layer
-
-A pure stdlib Python toolchain supporting the full data lifecycle:
-
-- schema validation with duplicate detection and token-length bounds
-- clean JSONL export with filtering and system prompt injection
+- schema validation
+- clean JSONL export with filtering
 - coverage reporting with taxonomy gap detection
-- golden evaluation framework with keyword-based scoring
-- record scaffolding tools (interactive and batch) for efficient authoring
+- golden evaluation framework
+- record scaffolding tools (interactive and batch)
 - GitHub Actions CI for automated validation on every push
 
-## Intended public artifacts
+## Public artifacts
 
-- GitHub repository for methods, documentation, and scripts
-- Hugging Face dataset page
-- Hugging Face model page
-- Sample records, taxonomy docs, style guide, annotation guide, and benchmark notes
+- GitHub: [boxwrench/potable](https://github.com/boxwrench/potable)
+- Hugging Face dataset: [boxwrench/potable](https://huggingface.co/datasets/boxwrench/potable)
+- Hugging Face model: [boxwrench/potable-lm](https://huggingface.co/boxwrench/potable-lm)
 
-Public naming is expected to follow this pattern:
-
-- Project: Potable
-- Dataset: Potable Dataset
-- Models: PotableLM
+Naming: Project is **Potable**, dataset is **Potable Dataset**, models are **PotableLM**.

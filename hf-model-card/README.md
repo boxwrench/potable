@@ -15,9 +15,11 @@ tags:
 
 ## Model Summary
 
-PotableLM is a planned domain-adapted model family for drinking water treatment operations. The initial municipal-track direction is a Gemma 4 31B Dense fine-tune built on the Potable Dataset, an expert-curated corpus of operational water treatment knowledge.
+PotableLM is a planned domain-adapted model family for drinking water treatment operations, built on the [Potable Dataset](https://huggingface.co/datasets/boxwrench/potable) — an expert-curated corpus of operational water treatment knowledge.
 
-This page is being prepared before the first public checkpoint release so the project has a stable public reference during grant and partnership outreach.
+Two tracks are planned: a municipal track for licensed plant operators (on-premises deployable) and a developing regions track for community water workers (offline-capable, fully open).
+
+No model weights have been released yet. This page establishes the project's intended scope while development continues.
 
 ## Intended Use
 
@@ -44,49 +46,19 @@ Primary target behaviors:
 
 ## Base Model
 
-Planned initial base model:
-
-- Gemma 4 31B Dense
-
-Rationale:
-
-- permissive Apache 2.0 licensing
-- dense architecture suitable for straightforward fine-tuning
-- strong local deployment potential for evaluation and utility-facing use cases
-
-The project may later add smaller models for offline deployment in low-resource contexts.
+Base model selection is ongoing. The project prioritizes permissive licensing, local deployment potential, and strong fine-tuning characteristics.
 
 ## Training Data
 
-The model is intended to be trained on the Potable Dataset, an expert-curated corpus covering:
-
-- treatment process knowledge
-- plant operations
-- troubleshooting scenarios
-- calculations
-- safety and regulatory context
-
-The differentiator is not raw scale. It is operator-authored or operator-reviewed quality and voice.
+The model will be trained on the [Potable Dataset](https://huggingface.co/datasets/boxwrench/potable), an expert-curated corpus covering treatment process knowledge, plant operations, troubleshooting, calculations, and regulatory context. Every example is authored or reviewed by a licensed operator.
 
 ## Training Procedure
 
-Planned early procedure:
-
-- parameter-efficient fine-tuning with QLoRA
-- single-GPU training runs
-- iterative evaluation against a fixed golden benchmark set
+Training procedure will be documented with the first checkpoint release.
 
 ## Evaluation
 
-Formal benchmark results are not yet published.
-
-Planned evaluation dimensions:
-
-- accuracy
-- completeness
-- specificity
-- practical usefulness
-- consistency of operator-style tone
+No benchmark results are published yet. Evaluation details will accompany each released checkpoint.
 
 ## Risks and Limitations
 
@@ -95,23 +67,13 @@ Planned evaluation dimensions:
 - The model must be treated as an assistant, not an authority.
 - Current and local regulations always override model output.
 
-## Model Release Status
-
-No public model weights are released at this time.
-
-This card is published in advance to establish the project's intended scope and operating constraints.
-
 ## License
 
-The intended municipal-track base model path uses Apache 2.0-compatible foundations.
-
-Any released checkpoint will clearly state:
-
-- the exact base model used
-- the license governing the released weights
-- whether the release is research-only or general use
+License will be specified with each released checkpoint.
 
 ## Contact
 
-- Project writing and context: [title22.org](https://title22.org)
-- GitHub: [boxwrench](https://github.com/boxwrench)
+Keith Wilkinson
+Operational Inference — [operationalinference.com](https://operationalinference.com)
+GitHub: [boxwrench](https://github.com/boxwrench)
+Writing: [title22.org](https://title22.org)
