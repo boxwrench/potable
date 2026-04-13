@@ -1,124 +1,159 @@
 ---
-pretty_name: Potable Dataset
-license: cc-by-4.0
+license: other
 task_categories:
 - text-generation
-- question-answering
 language:
 - en
 tags:
 - water-treatment
+- fine-tuning
+- chain-of-thought
 - drinking-water
+- SCADA
+- operator-knowledge
 - critical-infrastructure
-- llm-fine-tuning
-- operations
+- domain-adaptation
+pretty_name: Potable Dataset
 size_categories:
 - n<1K
 ---
 
 # Potable Dataset
 
-## Dataset Summary
+**Expert-curated fine-tuning data for drinking water treatment operations**
 
-Potable Dataset is an expert-curated fine-tuning dataset for drinking water treatment operations. It is designed to capture practical operator knowledge in a structured format that can be used to fine-tune open language models for water-sector applications.
+Maintained by [Operational Inference](https://operationalinference.com) | Keith Wilkinson, T5 Certified Water Treatment Operator
 
-The project is part of Effective Intelligence, an applied AI initiative focused on making expert technical knowledge more accessible in real-world domains.
+---
 
-This page is being published early so funders, collaborators, and researchers can evaluate the project direction before the first public dataset release.
+## Dataset description
 
-## Supported Use Cases
+The Potable Dataset is a fine-tuning dataset for language models in the drinking water treatment domain. Every example is authored or reviewed by a licensed water treatment operator with Class T5 certification — the highest treatment license issued in California — with over 14 years of operational experience.
 
-- fine-tuning domain-specific assistants for drinking water treatment
-- evaluation of model behavior on operational and troubleshooting tasks
-- research on preserving expert judgment in critical infrastructure settings
-- educational and training-adjacent experimentation, with appropriate caution
+The dataset teaches models to reason through operational problems using structured Chain-of-Thought prompting: how a senior operator sequences observations, weighs evidence, eliminates alternatives, and commits to action under uncertainty.
 
-## Out-of-Scope Use
+Part of the [Potable project](https://github.com/boxwrench/potable).
 
-- direct autonomous plant control
-- unsupervised safety-critical decision-making
-- replacement for licensed operators, engineers, or regulatory review
-- use as a sole authority in emergency or compliance situations
+---
 
-## Dataset Structure
+## Project direction
 
-Each record is built around chat-style messages and paired with metadata for filtering and governance. The intended export path is framework-agnostic JSONL.
+**Municipal track** — Conventional surface water treatment, groundwater operations, and distribution system management. Designed for licensed operators at municipal water utilities. On-premises deployable, no cloud dependency.
 
-Illustrative structure:
+**Developing regions track (WASH)** — Wells, handpumps, biosand filters, point-of-use chlorination, and WASH sanitation. Designed for community water workers in low-resource settings. Offline-capable, fully open under CC-BY-4.0.
+
+---
+
+## Dataset structure
+
+Each record uses a metadata envelope over OpenAI-compatible ChatML messages. At training time, a script strips the metadata to produce plain `messages` format compatible with standard fine-tuning frameworks.
 
 ```json
 {
   "messages": [
-    {"role": "system", "content": "You are an experienced drinking water treatment plant operator..."},
-    {"role": "user", "content": "How would you respond to rising settled water turbidity after a storm?"},
-    {"role": "assistant", "content": "Start by checking raw water change rate, coagulant feed, and upstream observations..."}
+    {"role": "system", "content": "..."},
+    {"role": "user", "content": "..."},
+    {"role": "assistant", "content": "..."}
   ],
   "metadata": {
     "id": "wt-0001",
-    "category": "coagulation_flocculation",
+    "category": "disinfection_and_oxidation",
+    "subcategory": "ct_compliance",
     "difficulty": "intermediate",
-    "tone": "operator",
     "source_type": "expert_authored",
+    "tags": ["chlorine", "CT", "SWTR", "residual"],
     "review_status": "approved",
-    "version": 1
+    "created_date": "2026-04-01",
+    "version": 1,
+    "notes": ""
   }
 }
 ```
 
-## Planned Content Areas
+Assistant responses use structured reasoning — assessment, hypothesis formation, root cause analysis, action planning, and verification — so that each diagnostic step is visible and independently evaluable.
 
-- coagulation and flocculation
-- sedimentation
-- filtration
-- disinfection
-- corrosion control
-- laboratory work
-- troubleshooting
-- safety
-- regulations
-- operational math
-- distribution and field response
+---
 
-## Data Creation
+## Taxonomy: 16 categories
 
-The data is being developed through a two-step workflow:
+Categories are organized by cognitive task and failure mode independence.
 
-1. Fast field capture of scenario kernels, questions, or judgment calls.
-2. Structured desk review into schema-compliant training examples.
+| Category | Description |
+|---|---|
+| `water_source_and_reservoir_management` | Raw water quality, watershed events, reservoir operations, algae, seasonal variation |
+| `groundwater` | Well systems, aquifer behavior, GWUDI, groundwater-specific chemistry and treatment |
+| `coagulation_flocculation_and_sedimentation` | Jar testing, dose adjustment, polymer, sedimentation basin management |
+| `pH_and_alkalinity` | System-wide pH and alkalinity as they affect coagulation, disinfection, and corrosion |
+| `filtration` | Filter run management, backwash, head loss, media problems, membrane filtration |
+| `disinfection_and_oxidation` | Chlorination, chloramination, UV, ozone, CT compliance, DBP control |
+| `distribution_nitrification_and_corrosion` | Pressure management, storage, nitrification, LCR monitoring, main breaks |
+| `regulations` | Compliance reasoning, public notification, violation response, regulatory frameworks |
+| `operational_procedure_and_process_management` | Startup/shutdown, chemical changeovers, shift handoff, reduced redundancy operations |
+| `systems_integration_and_equipment_behavior` | Equipment telemetry in process context, cascade failures, system interaction effects |
+| `SCADA_and_controls_infrastructure` | PLC failures, network issues, HMI artifacts, remote telemetry, alarm management |
+| `analyzers_and_instrumentation` | Instrument-specific failure modes, calibration drift, cross-checking analyzers |
+| `measurement_reliability_and_field_analysis` | Colorimetric interference, sample handling, field testing reliability, lab QC |
+| `chemical_feed_and_chemical_treatment` | Chemical quality, concentration verification, feed system failures, batch errors |
+| `emergency_response` | Source contamination, pressure loss, boil water advisory, treatment loss, notification |
+| `external_events_and_non_routine_operations` | Wildfires, agricultural events, infrastructure failures, extreme weather, pandemics |
 
-The intent is to preserve real operator voice rather than produce generic textbook summaries.
+Full taxonomy: [TAXONOMY.md](https://github.com/boxwrench/potable/blob/main/TAXONOMY.md)
 
-## Quality and Review
+---
 
-Planned controls include:
+## Data availability
 
-- schema validation
-- category and metadata checks
-- token-length checks
-- duplicate detection
-- manual review against a style guide
-- targeted evaluation against a golden benchmark set
+The dataset is in active development. Examples will be released on Hugging Face as the project matures. Developing regions content will be fully open under CC-BY-4.0.
 
-## Bias, Risks, and Limitations
+Research partners and WASH organizations interested in early access are welcome to reach out.
 
-- The early dataset will reflect the experience and judgment of a limited initial author pool.
-- Water treatment practices vary by plant design, source water, regulation, and local operating culture.
-- Regulatory and compliance guidance must always be verified against current authoritative sources.
-- The dataset is intended to support human operators, not replace them.
+---
+
+## Intended use
+
+**Appropriate uses:**
+- Fine-tuning open language models for water treatment operations support
+- Research on domain adaptation and expert knowledge capture
+- Training tools for water operators and utility staff
+- WASH program support in developing regions
+
+**Out-of-scope uses:**
+- Autonomous control of water treatment processes without human oversight
+- Replacing licensed operator judgment on compliance decisions
+- Any application where a model error could directly affect public health without a human review layer
+
+---
 
 ## Licensing
 
-The planned public community release is under CC-BY-4.0.
+Dataset: License terms vary by release. Developing regions content is CC-BY-4.0.
 
-Future production-oriented dataset tiers may use separate commercial licensing, but the project is open by default and the developing regions track is intended to remain fully open.
+---
 
 ## Citation
 
-If you use this dataset page in research or grant materials, cite the project as:
+```
+@dataset{wilkinson2026potable,
+  author    = {Wilkinson, Keith},
+  title     = {Potable Dataset: Expert-Curated Fine-Tuning Data for Drinking Water Treatment Operations},
+  year      = {2026},
+  publisher = {Operational Inference},
+  url       = {https://huggingface.co/datasets/boxwrench/potable}
+}
+```
 
-**Potable Dataset, Effective Intelligence, Keith Wilkinson.**
+---
+
+## Related
+
+- [boxwrench/potable](https://github.com/boxwrench/potable) — Main project repo
+- [boxwrench/potable-lm](https://huggingface.co/boxwrench/potable-lm) — Model weights (planned)
+- [title22.org](https://title22.org) — Maintainer writing and project notes
+
+---
 
 ## Contact
 
-- Project writing and context: [title22.org](https://title22.org)
-- GitHub: [boxwrench](https://github.com/boxwrench)
+Keith Wilkinson
+Operational Inference — [operationalinference.com](https://operationalinference.com)
+GitHub: [boxwrench](https://github.com/boxwrench)
