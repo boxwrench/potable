@@ -3,239 +3,124 @@
 
 import argparse
 import json
-import re
 import sys
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Tunable defaults — adjust these as the project evolves
+# Enum definitions — keep in sync with TAXONOMY.md and other scripts
 # ---------------------------------------------------------------------------
 
-MIN_TOKEN_ESTIMATE = 50       # warn below this (chars / 4 heuristic)
-MAX_TOKEN_ESTIMATE = 4096     # error above this
-TOKEN_DIVISOR = 4             # rough chars-to-tokens approximation
-DEFAULT_DATA_DIR = Path("data/raw")
-SIMILARITY_THRESHOLD = 0.85   # warn when two user prompts are this similar (0-1)
-
-# ---------------------------------------------------------------------------
-# Allowed enum values (from SCHEMA.md and TAXONOMY.md)
-# ---------------------------------------------------------------------------
-
-ALLOWED_ROLES = {"system", "user", "assistant"}
+REQUIRED_METADATA_FIELDS = [
+    "id", "category", "subcategory", "difficulty",
+    "source_type", "review_status", "created_date",
+]
 
 ALLOWED_CATEGORIES = {
-    # Municipal track
-    "water_source",
-    "coagulation_flocculation",
-    "sedimentation",
+    "water_source_and_reservoir_management",
+    "groundwater",
+    "coagulation_flocculation_and_sedimentation",
+    "pH_and_alkalinity",
     "filtration",
-    "disinfection",
-    "corrosion_control",
-    "taste_and_odor",
-    "plant_operations",
-    "laboratory",
-    "safety",
+    "disinfection_and_oxidation",
+    "distribution_nitrification_and_corrosion",
     "regulations",
-    "math_and_calculations",
-    "equipment_and_maintenance",
-    "distribution",
-    "troubleshooting",
+    "operational_procedure_and_process_management",
+    "systems_integration_and_equipment_behavior",
+    "SCADA_and_controls_infrastructure",
+    "analyzers_and_instrumentation",
+    "measurement_reliability_and_field_analysis",
+    "chemical_feed_and_chemical_treatment",
     "emergency_response",
-    # Developing regions track
-    "handpumps_and_boreholes",
-    "spring_and_well_protection",
-    "small_piped_systems",
-    "solar_pumping",
-    "household_treatment",
-    "point_of_use_chlorination",
-    "rainwater_harvesting",
-    "water_quality_field_testing",
-    "sanitation_basics",
-    "hygiene_promotion",
-    "seasonal_operations",
-    "supply_chain_and_maintenance",
-    "community_governance",
-    "disease_and_health",
+    "external_events_and_non_routine_operations",
 }
 
 ALLOWED_DIFFICULTIES = {"basic", "intermediate", "advanced"}
-ALLOWED_TONES = {"formal", "operator", "conversational"}
 ALLOWED_SOURCE_TYPES = {
-    "expert_authored",
-    "ai_generated",
-    "ai_assisted",
-    "adapted_from_manual",
+    "expert_authored", "ai_generated", "ai_assisted", "adapted_from_manual",
 }
 ALLOWED_REVIEW_STATUSES = {"draft", "reviewed", "approved", "rejected"}
 
-ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-
 # ---------------------------------------------------------------------------
-# Validation logic
+# Validation
 # ---------------------------------------------------------------------------
 
 
-def estimate_tokens(char_count: int) -> int:
-    return char_count // TOKEN_DIVISOR
-
-
-def tokenize(text: str) -> set[str]:
-    """Split text into lowercased word tokens for similarity comparison."""
-    return set(re.findall(r"[a-z0-9]+", text.lower()))
-
-
-def jaccard_similarity(a: set[str], b: set[str]) -> float:
-    """Jaccard similarity between two token sets."""
-    if not a and not b:
-        return 1.0
-    if not a or not b:
-        return 0.0
-    return len(a & b) / len(a | b)
-
-
-def extract_user_prompts(data: dict) -> list[str]:
-    """Extract all user message content strings from a record."""
-    messages = data.get("messages", [])
-    return [
-        m["content"]
-        for m in messages
-        if isinstance(m, dict) and m.get("role") == "user" and isinstance(m.get("content"), str)
-    ]
-
-
-def validate_record(filepath: Path, data: dict, seen_ids: set[str]) -> tuple[list[str], list[str]]:
-    """Return (errors, warnings) for a single record."""
+def validate_record(data: dict) -> list[str]:
     errors: list[str] = []
-    warnings: list[str] = []
 
     # --- messages -----------------------------------------------------------
     messages = data.get("messages")
-    if not isinstance(messages, list):
-        errors.append("'messages' must be an array")
-        return errors, warnings
+    if not isinstance(messages, list) or len(messages) == 0:
+        errors.append("'messages' must be a non-empty array")
+        return errors
 
-    if len(messages) == 0:
-        errors.append("'messages' array is empty")
-        return errors, warnings
+    roles = [m.get("role") for m in messages if isinstance(m, dict)]
 
-    has_user = False
-    has_assistant = False
-    total_chars = 0
+    # Optional system message must be first
+    idx = 0
+    if roles and roles[0] == "system":
+        idx = 1
+
+    # Remaining messages must alternate user / assistant, starting with user
+    expected = "user"
+    for role in roles[idx:]:
+        if role != expected:
+            errors.append(
+                f"messages: role order violation — got '{role}', expected '{expected}' "
+                f"(must follow system / user / assistant pattern)"
+            )
+            break
+        expected = "assistant" if expected == "user" else "user"
+
+    if "user" not in roles:
+        errors.append("messages: no 'user' message found")
+    if "assistant" not in roles:
+        errors.append("messages: no 'assistant' message found")
 
     for i, msg in enumerate(messages):
-        prefix = f"messages[{i}]"
         if not isinstance(msg, dict):
-            errors.append(f"{prefix}: must be an object")
+            errors.append(f"messages[{i}]: must be an object")
             continue
-
-        role = msg.get("role")
-        if role not in ALLOWED_ROLES:
-            errors.append(f"{prefix}: invalid role '{role}' (allowed: {sorted(ALLOWED_ROLES)})")
-        else:
-            if role == "user":
-                has_user = True
-            elif role == "assistant":
-                has_assistant = True
-
-        content = msg.get("content")
+        content = msg.get("content", "")
         if not isinstance(content, str) or content.strip() == "":
-            errors.append(f"{prefix}: 'content' must be a non-empty string")
-        else:
-            total_chars += len(content)
-
-    if not has_user:
-        errors.append("'messages' must contain at least one 'user' message")
-    if not has_assistant:
-        errors.append("'messages' must contain at least one 'assistant' message")
-
-    token_est = estimate_tokens(total_chars) if total_chars else 0
-    if total_chars and token_est < MIN_TOKEN_ESTIMATE:
-        warnings.append(
-            f"estimated {token_est} tokens (below minimum {MIN_TOKEN_ESTIMATE})"
-        )
-    if token_est > MAX_TOKEN_ESTIMATE:
-        errors.append(
-            f"estimated {token_est} tokens (exceeds maximum {MAX_TOKEN_ESTIMATE})"
-        )
+            errors.append(f"messages[{i}]: 'content' must be a non-empty string")
 
     # --- metadata -----------------------------------------------------------
     metadata = data.get("metadata")
     if not isinstance(metadata, dict):
         errors.append("'metadata' must be an object")
-        return errors, warnings
+        return errors
 
-    # Required fields
-    record_id = metadata.get("id")
-    if not isinstance(record_id, str) or record_id.strip() == "":
-        errors.append("metadata.id: must be a non-empty string")
-    else:
-        if record_id in seen_ids:
-            errors.append(f"metadata.id: duplicate id '{record_id}'")
-        seen_ids.add(record_id)
+    for field in REQUIRED_METADATA_FIELDS:
+        val = metadata.get(field)
+        if val is None or (isinstance(val, str) and val.strip() == ""):
+            errors.append(f"metadata.{field}: required field is missing or empty")
 
-    category = metadata.get("category")
-    if not isinstance(category, str) or category.strip() == "":
-        errors.append("metadata.category: required")
-    elif category not in ALLOWED_CATEGORIES:
+    category = metadata.get("category", "")
+    if category and category not in ALLOWED_CATEGORIES:
         errors.append(
-            f"metadata.category: '{category}' not in allowed categories"
+            f"metadata.category: '{category}' is not a valid taxonomy category"
         )
 
-    subcategory = metadata.get("subcategory")
-    if not isinstance(subcategory, str) or subcategory.strip() == "":
-        errors.append("metadata.subcategory: required")
-
-    created_date = metadata.get("created_date")
-    if not isinstance(created_date, str) or created_date.strip() == "":
-        errors.append("metadata.created_date: required")
-    elif not ISO_DATE_RE.match(created_date):
+    difficulty = metadata.get("difficulty", "")
+    if difficulty and difficulty not in ALLOWED_DIFFICULTIES:
         errors.append(
-            f"metadata.created_date: '{created_date}' is not YYYY-MM-DD"
+            f"metadata.difficulty: '{difficulty}' must be one of {sorted(ALLOWED_DIFFICULTIES)}"
         )
 
-    version = metadata.get("version")
-    if not isinstance(version, int) or version < 1:
-        errors.append("metadata.version: must be a positive integer")
-
-    # Optional enum fields
-    difficulty = metadata.get("difficulty")
-    if difficulty is not None and difficulty not in ALLOWED_DIFFICULTIES:
+    source_type = metadata.get("source_type", "")
+    if source_type and source_type not in ALLOWED_SOURCE_TYPES:
         errors.append(
-            f"metadata.difficulty: '{difficulty}' not in {sorted(ALLOWED_DIFFICULTIES)}"
+            f"metadata.source_type: '{source_type}' must be one of {sorted(ALLOWED_SOURCE_TYPES)}"
         )
 
-    tone = metadata.get("tone")
-    if tone is not None and tone not in ALLOWED_TONES:
+    review_status = metadata.get("review_status", "")
+    if review_status and review_status not in ALLOWED_REVIEW_STATUSES:
         errors.append(
-            f"metadata.tone: '{tone}' not in {sorted(ALLOWED_TONES)}"
+            f"metadata.review_status: '{review_status}' must be one of {sorted(ALLOWED_REVIEW_STATUSES)}"
         )
 
-    source_type = metadata.get("source_type")
-    if source_type is not None and source_type not in ALLOWED_SOURCE_TYPES:
-        errors.append(
-            f"metadata.source_type: '{source_type}' not in {sorted(ALLOWED_SOURCE_TYPES)}"
-        )
-
-    review_status = metadata.get("review_status")
-    if review_status is not None and review_status not in ALLOWED_REVIEW_STATUSES:
-        errors.append(
-            f"metadata.review_status: '{review_status}' not in {sorted(ALLOWED_REVIEW_STATUSES)}"
-        )
-
-    tags = metadata.get("tags")
-    if tags is not None:
-        if not isinstance(tags, list):
-            errors.append("metadata.tags: must be an array")
-        else:
-            for j, tag in enumerate(tags):
-                if not isinstance(tag, str):
-                    errors.append(f"metadata.tags[{j}]: must be a string")
-
-    notes = metadata.get("notes")
-    if notes is not None and not isinstance(notes, str):
-        errors.append("metadata.notes: must be a string")
-
-    return errors, warnings
+    return errors
 
 
 # ---------------------------------------------------------------------------
@@ -246,10 +131,8 @@ def validate_record(filepath: Path, data: dict, seen_ids: set[str]) -> tuple[lis
 def main() -> int:
     parser = argparse.ArgumentParser(description="Validate Potable Dataset records")
     parser.add_argument(
-        "--path",
-        type=Path,
-        default=DEFAULT_DATA_DIR,
-        help=f"Directory containing .json record files (default: {DEFAULT_DATA_DIR})",
+        "--path", type=Path, default=Path("data/raw"),
+        help="Directory containing .json record files",
     )
     args = parser.parse_args()
 
@@ -263,58 +146,25 @@ def main() -> int:
         print(f"No .json files found in {data_dir}")
         return 0
 
-    seen_ids: set[str] = set()
     total_errors = 0
-    total_warnings = 0
-    # Collect user prompts for duplicate detection: [(filename, prompt_text, token_set)]
-    prompt_index: list[tuple[str, str, set[str]]] = []
 
     for filepath in files:
         try:
             with open(filepath, encoding="utf-8") as f:
                 data = json.load(f)
         except json.JSONDecodeError as e:
-            print(f"ERROR {filepath.name}: invalid JSON -- {e}")
+            print(f"ERROR {filepath.name}: invalid JSON — {e}")
             total_errors += 1
             continue
 
-        errors, warnings = validate_record(filepath, data, seen_ids)
-
+        errors = validate_record(data)
         for err in errors:
             print(f"ERROR {filepath.name}: {err}")
-        for warn in warnings:
-            print(f"WARN  {filepath.name}: {warn}")
-
         total_errors += len(errors)
-        total_warnings += len(warnings)
-
-        # Index user prompts for similarity check
-        for prompt_text in extract_user_prompts(data):
-            tokens = tokenize(prompt_text)
-            if tokens:
-                prompt_index.append((filepath.name, prompt_text, tokens))
-
-    # --- Duplicate detection pass ---
-    seen_pairs: set[tuple[str, str]] = set()
-    for i, (name_a, text_a, tokens_a) in enumerate(prompt_index):
-        for j, (name_b, text_b, tokens_b) in enumerate(prompt_index):
-            if j <= i:
-                continue
-            if name_a == name_b:
-                continue
-            pair = (name_a, name_b)
-            if pair in seen_pairs:
-                continue
-            sim = jaccard_similarity(tokens_a, tokens_b)
-            if sim >= SIMILARITY_THRESHOLD:
-                seen_pairs.add(pair)
-                print(f"WARN  similar prompts ({sim:.0%}): {name_a} <-> {name_b}")
-                total_warnings += 1
 
     print(f"\n--- Validation summary ---")
-    print(f"Files checked: {len(files)}")
-    print(f"Errors: {total_errors}")
-    print(f"Warnings: {total_warnings}")
+    print(f"Files checked : {len(files)}")
+    print(f"Errors        : {total_errors}")
 
     return 1 if total_errors > 0 else 0
 
