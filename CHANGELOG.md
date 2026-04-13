@@ -2,6 +2,16 @@
 
 All notable dataset-documentation changes should be recorded here.
 
+## 2026-04-13
+
+- Restructured municipal taxonomy to 16 domain-organized categories (see TAXONOMY.md for full definitions and design rationale)
+- Rewrote `validate.py`, `stats.py`, `new_record.py`, `batch_scaffold.py` to use new taxonomy
+- Rewrote `TAXONOMY.md` with category definitions, subcategory directions, and design notes
+- Updated `README.md`: new taxonomy table, two-track model plan, sponsor acknowledgment (Robot Garden)
+- Updated `CLAUDE.md`: new category enum list, removed stale script notes
+- Reclassified wt-0002: `math_and_calculations` → `disinfection_and_oxidation`
+- Reclassified wt-0003: `taste_and_odor` → `water_source_and_reservoir_management`
+
 ## 2026-04-05
 
 - Added dataset toolchain: `validate.py`, `export.py`, `stats.py`, `eval.py`, `new_record.py`, `batch_scaffold.py`
