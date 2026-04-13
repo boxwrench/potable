@@ -220,6 +220,14 @@ make scaffold S=data/seeds/file.txt   # batch scaffold from seed file
 
 ---
 
+## Support
+
+Operational Inference and the Potable project are graciously supported by [Robot Garden](https://robotgarden.org), a community workshop and makerspace in Livermore, CA and a 501(c)(3) nonprofit organization. Robot Garden provides infrastructure so that people can engage in and collaborate on technology projects, promoting innovation and interest in science, technology, engineering, industrial arts, and math through robotics and creative projects.
+
+Their support makes the open and philanthropic dimensions of this work possible.
+
+---
+
 ## Contributing
 
 The initial phase is founder-led and focused on establishing data quality, schema discipline, and voice consistency. Public contribution guidelines will be added after the core format and review workflow stabilize.

@@ -48,8 +48,7 @@ One `.json` file per record in `data/raw/`. Shape:
 - Pure stdlib Python 3.10+, no external dependencies
 - IDs follow `wt-NNNN` pattern, auto-incremented by scripts
 - One record per file, filename matches ID (e.g., `wt-0001.json`)
-- Tunable defaults are constants at the top of each script
-- Category and subcategory values must be snake_case
+- Subcategory values must be snake_case; categories follow TAXONOMY.md exactly (two use mixed case)
 - Dates are ISO 8601 (YYYY-MM-DD)
 - System prompt comes from `data/system_prompt.txt` — do not hardcode different versions in records
 
@@ -68,11 +67,10 @@ Always run `validate.py` after creating or editing records.
 
 ## Enum values
 
-### Categories (municipal)
-water_source, coagulation_flocculation, sedimentation, filtration, disinfection, corrosion_control, taste_and_odor, plant_operations, laboratory, safety, regulations, math_and_calculations, equipment_and_maintenance, distribution, troubleshooting, emergency_response
+### Categories (municipal — 16 total)
+water_source_and_reservoir_management, groundwater, coagulation_flocculation_and_sedimentation, pH_and_alkalinity, filtration, disinfection_and_oxidation, distribution_nitrification_and_corrosion, regulations, operational_procedure_and_process_management, systems_integration_and_equipment_behavior, SCADA_and_controls_infrastructure, analyzers_and_instrumentation, measurement_reliability_and_field_analysis, chemical_feed_and_chemical_treatment, emergency_response, external_events_and_non_routine_operations
 
-### Categories (developing regions)
-handpumps_and_boreholes, spring_and_well_protection, small_piped_systems, solar_pumping, household_treatment, point_of_use_chlorination, rainwater_harvesting, water_quality_field_testing, sanitation_basics, hygiene_promotion, seasonal_operations, supply_chain_and_maintenance, community_governance, disease_and_health
+Note: `pH_and_alkalinity` and `SCADA_and_controls_infrastructure` use mixed case intentionally. All other categories and all subcategories are snake_case.
 
 ### Other enums
 - difficulty: basic, intermediate, advanced
@@ -93,8 +91,6 @@ Follow the style guide. Key rules:
 ## When editing scripts
 
 - Keep the taxonomy and enum sets in sync across `validate.py`, `new_record.py`, `batch_scaffold.py`, and `stats.py` if categories change
-- Token heuristic is `len(text) / 4` — a rough approximation, not exact
-- Duplicate detection uses Jaccard similarity at 0.85 threshold
 - CI runs `validate.py` on push/PR — don't break it
 
 ## Golden eval cases
