@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Print coverage statistics for the Potable Dataset."""
+"""Print coverage statistics for the Potable Dataset (approved records only)."""
 
 import argparse
 import json
@@ -8,68 +8,29 @@ from collections import Counter
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Tunable defaults
+# Taxonomy — keep in sync with TAXONOMY.md and validate.py
 # ---------------------------------------------------------------------------
 
-DEFAULT_DATA_DIR = Path("data/raw")
-TOKEN_DIVISOR = 4             # same heuristic as validate.py
-
-# Full taxonomy for gap detection (from TAXONOMY.md)
 ALL_CATEGORIES = [
-    # Municipal track
-    "water_source",
-    "coagulation_flocculation",
-    "sedimentation",
+    "water_source_and_reservoir_management",
+    "groundwater",
+    "coagulation_flocculation_and_sedimentation",
+    "pH_and_alkalinity",
     "filtration",
-    "disinfection",
-    "corrosion_control",
-    "taste_and_odor",
-    "plant_operations",
-    "laboratory",
-    "safety",
+    "disinfection_and_oxidation",
+    "distribution_nitrification_and_corrosion",
     "regulations",
-    "math_and_calculations",
-    "equipment_and_maintenance",
-    "distribution",
-    "troubleshooting",
+    "operational_procedure_and_process_management",
+    "systems_integration_and_equipment_behavior",
+    "SCADA_and_controls_infrastructure",
+    "analyzers_and_instrumentation",
+    "measurement_reliability_and_field_analysis",
+    "chemical_feed_and_chemical_treatment",
     "emergency_response",
-    # Developing regions track
-    "handpumps_and_boreholes",
-    "spring_and_well_protection",
-    "small_piped_systems",
-    "solar_pumping",
-    "household_treatment",
-    "point_of_use_chlorination",
-    "rainwater_harvesting",
-    "water_quality_field_testing",
-    "sanitation_basics",
-    "hygiene_promotion",
-    "seasonal_operations",
-    "supply_chain_and_maintenance",
-    "community_governance",
-    "disease_and_health",
+    "external_events_and_non_routine_operations",
 ]
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def print_table(title: str, counts: dict[str, int], all_keys: list[str] | None = None) -> None:
-    """Print a simple key-value table with optional zero-fill from all_keys."""
-    keys = all_keys if all_keys else sorted(counts.keys())
-    if not keys:
-        return
-
-    print(f"\n{title}")
-    print("-" * (len(title) + 4))
-
-    max_key_len = max(len(k) for k in keys)
-    for key in keys:
-        count = counts.get(key, 0)
-        marker = " <-- gap" if count == 0 and all_keys else ""
-        print(f"  {key:<{max_key_len}}  {count:>4}{marker}")
-
+COVERAGE_TARGET = 10   # flag categories below this count
 
 # ---------------------------------------------------------------------------
 # Main
@@ -78,13 +39,11 @@ def print_table(title: str, counts: dict[str, int], all_keys: list[str] | None =
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Print Potable Dataset coverage statistics"
+        description="Potable Dataset coverage report (approved records)"
     )
     parser.add_argument(
-        "--path",
-        type=Path,
-        default=DEFAULT_DATA_DIR,
-        help=f"Directory containing .json record files (default: {DEFAULT_DATA_DIR})",
+        "--path", type=Path, default=Path("data/raw"),
+        help="Directory containing .json record files",
     )
     args = parser.parse_args()
 
@@ -94,110 +53,61 @@ def main() -> int:
         return 1
 
     files = sorted(data_dir.glob("*.json"))
-    if not files:
-        print(f"No .json files found in {data_dir}")
-        return 0
 
     category_counts: Counter[str] = Counter()
-    subcategory_counts: Counter[str] = Counter()
-    difficulty_counts: Counter[str] = Counter()
-    status_counts: Counter[str] = Counter()
     source_counts: Counter[str] = Counter()
-    cat_sub_map: dict[str, Counter[str]] = {}
-    token_counts: list[tuple[str, int]] = []  # (filename, estimated tokens)
+    difficulty_counts: Counter[str] = Counter()
     total = 0
-    load_errors = 0
+    non_approved = 0
 
     for filepath in files:
         try:
             with open(filepath, encoding="utf-8") as f:
                 data = json.load(f)
         except (json.JSONDecodeError, OSError):
-            load_errors += 1
             continue
 
         metadata = data.get("metadata", {})
+        if metadata.get("review_status") != "approved":
+            non_approved += 1
+            continue
+
         total += 1
+        category_counts[metadata.get("category", "unknown")] += 1
+        source_counts[metadata.get("source_type", "unknown")] += 1
+        difficulty_counts[metadata.get("difficulty", "unknown")] += 1
 
-        cat = metadata.get("category", "unknown")
-        sub = metadata.get("subcategory", "unknown")
-        category_counts[cat] += 1
-        subcategory_counts[sub] += 1
-        difficulty_counts[metadata.get("difficulty", "unset")] += 1
-        status_counts[metadata.get("review_status", "unset")] += 1
-        source_counts[metadata.get("source_type", "unset")] += 1
+    # --- Header ---
+    print("=" * 54)
+    print("  Potable Dataset — Coverage Report (approved only)")
+    print("=" * 54)
+    print(f"\n  Approved records : {total}")
+    print(f"  Non-approved     : {non_approved} (draft/reviewed/rejected)")
 
-        if cat not in cat_sub_map:
-            cat_sub_map[cat] = Counter()
-        cat_sub_map[cat][sub] += 1
-
-        # Token estimation
-        messages = data.get("messages", [])
-        total_chars = sum(
-            len(m.get("content", ""))
-            for m in messages
-            if isinstance(m, dict)
-        )
-        token_counts.append((filepath.name, total_chars // TOKEN_DIVISOR))
-
-    # --- Summary ---
-    print("=" * 50)
-    print("  Potable Dataset -- Coverage Report")
-    print("=" * 50)
-    print(f"\nTotal records: {total}")
-    if load_errors:
-        print(f"Load errors:   {load_errors}")
-
-    # --- By review status ---
-    print_table("By Review Status", status_counts)
-
-    # --- By category (with gap detection) ---
-    print_table("By Category", category_counts, ALL_CATEGORIES)
-
-    # --- Subcategories grouped by category ---
-    print(f"\nBy Subcategory (grouped)")
-    print("-" * 30)
-    for cat in sorted(cat_sub_map.keys()):
-        subs = cat_sub_map[cat]
-        print(f"\n  [{cat}]")
-        for sub in sorted(subs.keys()):
-            print(f"    {sub:<40}  {subs[sub]:>4}")
-
-    # --- By difficulty ---
-    print_table("By Difficulty", difficulty_counts)
+    # --- By category ---
+    print("\nBy Category")
+    print("-" * 54)
+    col = max(len(c) for c in ALL_CATEGORIES)
+    for cat in ALL_CATEGORIES:
+        count = category_counts.get(cat, 0)
+        flag = "  *** below target" if count < COVERAGE_TARGET else ""
+        print(f"  {cat:<{col}}  {count:>4}{flag}")
 
     # --- By source type ---
-    print_table("By Source Type", source_counts)
+    print("\nBy Source Type")
+    print("-" * 34)
+    for src in ["expert_authored", "ai_assisted", "adapted_from_manual", "ai_generated"]:
+        print(f"  {src:<25}  {source_counts.get(src, 0):>4}")
 
-    # --- Token stats ---
-    if token_counts:
-        tokens_only = sorted(t for _, t in token_counts)
-        n = len(tokens_only)
-        median = tokens_only[n // 2] if n % 2 == 1 else (tokens_only[n // 2 - 1] + tokens_only[n // 2]) // 2
-        print(f"\nToken Estimates (chars/{TOKEN_DIVISOR} heuristic)")
-        print("-" * 42)
-        print(f"  Min:    {tokens_only[0]:>6}")
-        print(f"  Max:    {tokens_only[-1]:>6}")
-        print(f"  Mean:   {sum(tokens_only) // n:>6}")
-        print(f"  Median: {median:>6}")
+    # --- By difficulty ---
+    print("\nBy Difficulty")
+    print("-" * 26)
+    for diff in ["basic", "intermediate", "advanced"]:
+        print(f"  {diff:<15}  {difficulty_counts.get(diff, 0):>4}")
 
-        # Show outliers (top/bottom by token count)
-        if n >= 5:
-            print(f"\n  Shortest records:")
-            for name, tokens in sorted(token_counts, key=lambda x: x[1])[:3]:
-                print(f"    {name:<30}  {tokens:>5} tokens")
-            print(f"  Longest records:")
-            for name, tokens in sorted(token_counts, key=lambda x: x[1], reverse=True)[:3]:
-                print(f"    {name:<30}  {tokens:>5} tokens")
-
-    # --- Coverage gaps ---
-    gaps = [c for c in ALL_CATEGORIES if category_counts.get(c, 0) == 0]
-    if gaps:
-        print(f"\nCoverage Gaps ({len(gaps)} categories with 0 records)")
-        print("-" * 50)
-        for g in gaps:
-            print(f"  - {g}")
-
+    # --- Gap summary ---
+    gaps = [c for c in ALL_CATEGORIES if category_counts.get(c, 0) < COVERAGE_TARGET]
+    print(f"\nCategories below target ({COVERAGE_TARGET}): {len(gaps)} of {len(ALL_CATEGORIES)}")
     print()
     return 0
 
