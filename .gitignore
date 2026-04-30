@@ -22,3 +22,8 @@ Thumbs.db
 # Local environment
 .env
 
+# Local tooling
+.claude/
+
+# Internal project planning docs (do not commit)
+docs/potable_project_files/
