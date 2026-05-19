@@ -22,7 +22,10 @@ Thumbs.db
 # Local environment
 .env
 
-# Local tooling
+# Local tooling — not part of the dataset
+potable_work/
+
+# Claude Code per-project local settings
 .claude/
 
 # Internal project planning docs (do not commit)
