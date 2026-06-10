@@ -1,0 +1,19 @@
+
+● Found it. The white screen is the opencode backend not starting. The runtime looks for the opencode binary in this
+  order:
+
+  1. resources/sidecars/ — the 660 MB we just deleted (bundled binary)
+  2. ~/.opencode/bin/opencode.exe — user-installed fallback
+  3. PATH
+
+  On the laptop neither exists, so the backend never boots and the UI hangs blank.
+
+  The setup step you're remembering is running install_opencode.sh — it installs the opencode CLI to ~/.opencode/bin/.
+  Once that's there, Electron finds it and the UI loads.
+
+  On the laptop:
+  bash install_opencode.sh
+  or in this session: ! bash C:/GitHub/potable/potable_work/install_opencode.sh
+
+  Also note: we deleted resources/sidecars/ from the desktop too — so the next time you launch the app here it'll also
+  rely on ~/.opencode/bin/. If it was already installed there it'll still work. Want me to check if it's present?

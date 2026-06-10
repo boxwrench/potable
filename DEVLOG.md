@@ -1,5 +1,17 @@
 # Dev Log
 
+## 2026-05-18 (later)
+
+Starter cards were silently sabotaging the PotableLM persona. Trimmed them and noted the underlying portability problem.
+
+- **What was wrong:** the "Build a Tool" and "Write a SOP" cards in `session-surface.tsx` were each dumping ~60 lines of intake-form prompt into the composer ("Step 1 — present the intake template below exactly as written..."). That prompt overrode `AGENTS.md`'s rewritten doctrine ("skip the intake form, use the profile, build in ~3 short messages"). End result: clicking a card looked indistinguishable from copy-pasting a template into a browser AI — none of the persona's value came through.
+- **Fix:** card prompts are now terse triggers. Build a Tool → `"Help me build a plant tool."`; Write a SOP → `"Help me write an SOP."`. AGENTS.md (offer-menu → ONE question → build → confirm) runs unopposed.
+- **Underlying issue — persona portability:** the PotableLM persona, plant profile, and tool catalog live in `~/.config/opencode/AGENTS.md` + `plant-profile.md` (loaded via `opencode.json` `instructions`). That's *user-global*, not app-bundled. Consequences:
+  - On a fresh machine without the config restore, the cards become very thin triggers and the AI behaves like a generic assistant. The `config-snapshot/` README is the restore path for now.
+  - Opening the `potable_work` source repo itself as a workspace double-loads the global AGENTS.md *and* the repo's dev-guide AGENTS.md — voice and rules conflict. Don't open it as an operator workspace.
+  - If the user switches to a model that handles system prompts loosely, the doctrine softens. Haiku 4.5 has held it well in testing.
+- **Followup options when ready to ship beyond this machine** (not done now): (a) bundle the persona + tool catalog as a workspace blueprint so any new workspace gets it without touching `~/.config/opencode/`; (b) inject it as an app-level system prompt in `apps/app/src/app/constants.ts` so it loads even with no AGENTS.md present; (c) ship a "first-run" copy of the three config files into `~/.config/opencode/` on install. (a) is the lightest, (b) is the most defensive, (c) plays nicest with users who already use opencode for other things.
+
 ## 2026-05-18
 
 PotableLM persona, plant profile, and HTML tool auto-preview wired end-to-end. The app now opens with the operator's facility context already loaded and produces tools that pop straight into the browser.
